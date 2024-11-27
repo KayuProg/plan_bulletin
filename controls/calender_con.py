@@ -5,14 +5,13 @@ class calender_contents():
         super().__init__()
         
         ####################### main bar ########################
-        self.title=ft.Text("Tosay's schedule", theme_style=ft.TextThemeStyle.DISPLAY_MEDIUM,weight=ft.FontWeight.W_500,)#TODOディスプレイのサイズに合わせて文字の大きさも変わるようにしたいね．
+        
+        #TODOディスプレイのサイズに合わせて文字の大きさも変わるようにしたいね．
+        self.title=ft.Text("Tosay's schedule", theme_style=ft.TextThemeStyle.DISPLAY_MEDIUM,weight=ft.FontWeight.W_500,)
         self.title_container=ft.Container(content=self.title,alignment=ft.alignment.center)#containerを使ってTitleを中央配置
-        self.main_bar=ft.Row(controls=[self.title_container],expand=True)
-
-            
-            
-            
-            
+        self.back_date=ft.IconButton(icon=ft.icons.ARROW_CIRCLE_LEFT, on_click=self.back_date_func)
+        self.forward_date=ft.IconButton(icon=ft.icons.ARROW_CIRCLE_RIGHT, on_click=self.forward_date_func)
+        self.main_bar=ft.Row(controls=[self.back_date,self.title_container,self.forward_date],alignment=ft.MainAxisAlignment.SPACE_EVENLY)
 
         
         self.space= ft.Placeholder(color=ft.colors.random_color(),expand=True)#一時的な場所確保
@@ -24,31 +23,16 @@ class calender_contents():
                                           self.space
                                         ],expand=True)
 
-
-
-
     
-        self.title=ft.Text("alkfjalj", theme_style=ft.TextThemeStyle.DISPLAY_MEDIUM,weight=ft.FontWeight.W_500,)#TODOディスプレイのサイズに合わせて文字の大きさも変わるようにしたいね．
-        self.title_container=ft.Container(content=self.title,alignment=ft.alignment.center)#containerを使ってTitleを中央配置
-        
-        
-        
-        self.contents=ft.Column(controls=[self.title_container,
-                                     ft.Divider(color="white",height=1.5,thickness=1.5),
-                                    ],expand=True)#expandで横画面の大きさに合わせる,height,thicknessでdividerの幅設定．
-
-
-
-
-
-
-
-
-
-
-
-
-
+    def back_date_func(self,e):#TODO関数の作成
+        pass
+    
+    def forward_date_func(self,e):#TODO関数の作成
+        pass
+    
+    
+    def button_clicked(self,e):
+        print(0)
 
 
 
