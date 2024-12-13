@@ -35,5 +35,3 @@ class calender_contents():
         print(0)
 
 
-
-
