@@ -9,22 +9,23 @@ from googleapiclient.errors import HttpError
 
 SCOPES = ["https://www.googleapis.com/auth/calendar"]#アクセス権限範囲指定
 
+json_pass="./jsons/calender_token.json"
 
 def main():
   creds = None#認証情報を格納する変数
-  if os.path.exists("token_caldner.json"):
-    creds = Credentials.from_authorized_user_file("token.json_calender", SCOPES)
+  if os.path.exists(json_pass):
+    creds = Credentials.from_authorized_user_file(json_pass, SCOPES)
   # If there are no (valid) credentials available, let the user log in.
   if not creds or not creds.valid:
     if creds and creds.expired and creds.refresh_token:
       creds.refresh(Request())
     else:
       flow = InstalledAppFlow.from_client_secrets_file(
-          "credentials_calender.json", SCOPES
+          "./jsons/parent.json", SCOPES
       )
       creds = flow.run_local_server(port=0)
     # Save the credentials for the next run
-    with open("token_calender.json", "w") as token:
+    with open(json_pass, "w") as token:
       token.write(creds.to_json())
 
   try:

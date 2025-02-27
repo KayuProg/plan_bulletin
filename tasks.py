@@ -8,20 +8,22 @@ import os.path
 # 読み取り権限を指定
 SCOPES = ["https://www.googleapis.com/auth/tasks"]
 
+json_pass="./jsons/tasks_token.json"
+
 def main():
     creds = None#認証情報を格納する変数
     # トークンファイルを確認して認証情報をロード
-    if os.path.exists("token_tasks.json"):#token.jsonが存在するかの確認
-        creds = Credentials.from_authorized_user_file("token_tasks.json", SCOPES)
+    if os.path.exists(json_pass):#.jsonが存在するかの確認
+        creds = Credentials.from_authorized_user_file(json_pass, SCOPES)
     
     # 認証情報が無効な場合、ログインプロセスを実行
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:#tokenの期限切れ確認
             creds.refresh(Request())
         else:
-            flow = InstalledAppFlow.from_client_secrets_file("credentials_tasks.json", SCOPES)
+            flow = InstalledAppFlow.from_client_secrets_file("./jsons/parent.json", SCOPES)
             creds = flow.run_local_server(port=0)
-        with open("token_tasks.json", "w") as token:
+        with open(json_pass, "w") as token:
             token.write(creds.to_json())
 
     try:
