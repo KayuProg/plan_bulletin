@@ -9,7 +9,7 @@ from googleapiclient.errors import HttpError
 
 SCOPES = ["https://www.googleapis.com/auth/calendar"]#アクセス権限範囲指定
 
-json_pass="./jsons/calender_token.json"
+json_pass="./get_info/jsons/calender_token.json"
 
 def main():
   creds = None#認証情報を格納する変数
@@ -20,45 +20,67 @@ def main():
     if creds and creds.expired and creds.refresh_token:
       creds.refresh(Request())
     else:
-      flow = InstalledAppFlow.from_client_secrets_file("./jsons/parent.json", SCOPES)
+      flow = InstalledAppFlow.from_client_secrets_file("./get_info/jsons/parent.json", SCOPES)
       creds = flow.run_local_server(port=0)
     # Save the credentials for the next run
     with open(json_pass, "w") as token:
       token.write(creds.to_json())
 
-  try:
+  try:#calenderの読み取る処理
     service = build("calendar", "v3", credentials=creds)
 
-    # Call the Calendar API
-    now = datetime.datetime.utcnow().isoformat() + "Z"  # 'Z' indicates UTC time
-    # now = datetime.datetime.now(datetime.UTC).isoformat() + "Z"
+    #ISOformatでの日付
+    now_time=datetime.datetime.utcnow()+datetime.timedelta(hours=9)
+    now = now_time.replace(hour=0, minute=0, second=0, microsecond=0).isoformat() + "Z"  # 'Z' indicates UTC time
+    next_day= (now_time + datetime.timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0).isoformat()+"Z"
 
-    print("Getting the upcoming 10 events")
+    # print(now)
+    # print(next_day)
+
+    #now,next_dayを設定することによって本日のみのデータを返す．
     events_result = (
         service.events()
         .list(
             calendarId="primary",
             timeMin=now,
-            maxResults=10,
+            timeMax=next_day,
+            # maxResults=10,
             singleEvents=True,
             orderBy="startTime",
         )
         .execute()
     )
-    print(events_result)
+    
+    colors = service.colors().get().execute()#予定のカラーの辞書配列
+    color_dict = colors.get('event', {})
+    
     events = events_result.get("items", [])
-
+    
+    
     if not events:
       print("No upcoming events found.")
-      return
+      return 
 
-    # Prints the start and name of the next 10 events
+    result=[]
     for event in events:
-      start = event["start"].get("dateTime", event["start"].get("date"))
-      print(start, event["summary"])
+      date=event["start"].get("dateTime", event["start"].get("date"))
+      summary=event["summary"]
+      color_id=event.get("colorId","1")
+      color=color_dict.get(color_id, {}).get("background")
+      description=event.get("description")
+      
+      #result配列内に辞書配列として内容を返す．
+      result_con={"date":date,"summary":summary,"desc":description,"color":color}
+      result.append(result_con)
+      
+      
+    return result
 
   except HttpError as error:
     print(f"An error occurred: {error}")
+
+
+
 
 
 if __name__ == "__main__":

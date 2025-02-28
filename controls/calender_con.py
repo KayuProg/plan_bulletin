@@ -1,6 +1,7 @@
 import flet as ft
+import datetime
 
-#実行場所によるかも
+#実行場所によるので注意
 import get_info.calender as calender
 
 class calender_contents():
@@ -22,17 +23,17 @@ class calender_contents():
         
 
 
-        self.plans=[]#ここに，[時間，内容，説明]のlistを入れていく
-                
-                
-        self.list=self.calender_list_create()
+        self.plans=ft.Column(controls=[],expand=True)#ここに，[時間，内容，説明]のlistを入れていく
+
+        #self.plansにlistを作成する関数の実行
+        self.calender_list_create()
         
         self.space= ft.Placeholder(color=ft.colors.random_color(),expand=True)#一時的な場所確保
 
         #このself.contentsをmain.pyで呼び出して使用する．
         self.contents=ft.Column(controls=[self.main_bar,
-                                         ft.Divider(color="white",height=1.5,thickness=1.5),                                      
-                                          self.space,self.list
+                                          ft.Divider(color="white",height=1.5,thickness=1.5),                                      
+                                          self.plans
                                         ],expand=True)
 
     
@@ -44,17 +45,24 @@ class calender_contents():
 
     
     def calender_list_create(self):#list_contents_createをforで繰り返してself.contentsのcolumnに入れるリスト作成
-        plan_count=0#その日の予定の数をカウントする．
-         
-        result=calender.main()
-               
-        time=ft.Text("11:22", theme_style=ft.TextThemeStyle.DISPLAY_MEDIUM,weight=ft.FontWeight.W_100,)
-        plan_con=ft.Text("Tosay", theme_style=ft.TextThemeStyle.DISPLAY_MEDIUM,weight=ft.FontWeight.W_100,)
-        description=ft.Text("Tosay's scul", theme_style=ft.TextThemeStyle.DISPLAY_MEDIUM,weight=ft.FontWeight.W_100,)
-        
-        list_parent=ft.Row(controls=[time,plan_con,description],expand=True,spacing=0)#Columnに入れる
-        
-        return list_parent
+        #APIより今日の予定の情報を拾ってくる．ファイルはcalender.py
+        events=calender.main()
+        list_con=[]
+        for event in events:
+            event_time=datetime.datetime.fromisoformat(event["date"]).strftime("%H:%M")
+            if event_time=="00:00":
+                event_time="All day"
+
+            bg_color=event["color"]
+            
+            time=ft.Text(event_time,size=25,weight=ft.FontWeight.W_100,)
+            plan_con=ft.Text(event["summary"], theme_style=ft.TextThemeStyle.DISPLAY_MEDIUM,weight=ft.FontWeight.W_100,bgcolor=bg_color,color="black",expand=0)
+            description=ft.Text(event["desc"], theme_style=ft.TextThemeStyle.DISPLAY_MEDIUM,weight=ft.FontWeight.W_100,bgcolor=bg_color,color="black",expand=True)
+            
+            list_con=ft.Row(controls=[time,plan_con,description],spacing=10)
+
+            self.plans.controls.append(list_con)
+        return 0
         
 class list_contents_create():
     def __init__(self):

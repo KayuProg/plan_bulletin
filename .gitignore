@@ -161,4 +161,5 @@ cython_debug/
 
 
 #json関連ファイルignore
-/jsons
+/get_info/jsons
+get_info/jsons/*.json
