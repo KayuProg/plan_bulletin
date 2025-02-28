@@ -6,14 +6,14 @@ This is an app showing our plan recorded on Google Apps like "Google Calender" a
 
 # How to use
 
-First you should go into venv using below command.
+First you should move into venv unning below command.
 
-'''
+```
  .venv/Scripts/activate.ps1
-'''
+```
 
 To run the app:
 
 ```
-flet run [app_directory]
+flet run [at app_directory]
 ```
