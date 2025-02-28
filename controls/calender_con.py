@@ -11,17 +11,14 @@ class calender_contents():
         ####################### main bar ########################
         
         #TODOディスプレイのサイズに合わせて文字の大きさも変わるようにしたいね．
-        self.title=ft.Text("Tosay's schedule", theme_style=ft.TextThemeStyle.DISPLAY_MEDIUM,weight=ft.FontWeight.W_500,)
+        self.title=ft.Text("Tosay's schedule", theme_style=ft.TextThemeStyle.HEADLINE_MEDIUM,weight=ft.FontWeight.W_500,)
         self.title_container=ft.Container(content=self.title,alignment=ft.alignment.center)#containerを使ってTitleを中央配置
         self.back_date=ft.IconButton(icon=ft.icons.ARROW_CIRCLE_LEFT, on_click=self.back_date_func)
         self.forward_date=ft.IconButton(icon=ft.icons.ARROW_CIRCLE_RIGHT, on_click=self.forward_date_func)
         self.main_bar=ft.Row(controls=[self.back_date,self.title_container,self.forward_date],alignment=ft.MainAxisAlignment.SPACE_EVENLY)
-
-
         
         ######################## incorporate ########################     
         
-
 
         self.plans=ft.Column(controls=[],expand=True)#ここに，[時間，内容，説明]のlistを入れていく
 
@@ -55,19 +52,19 @@ class calender_contents():
 
             bg_color=event["color"]
             
-            time=ft.Text(event_time,size=25,weight=ft.FontWeight.W_100,)
-            plan_con=ft.Text(event["summary"], theme_style=ft.TextThemeStyle.DISPLAY_MEDIUM,weight=ft.FontWeight.W_100,bgcolor=bg_color,color="black",expand=0)
-            description=ft.Text(event["desc"], theme_style=ft.TextThemeStyle.DISPLAY_MEDIUM,weight=ft.FontWeight.W_100,bgcolor=bg_color,color="black",expand=True)
+            time=ft.Container(content=ft.Text(event_time,size=25,weight=ft.FontWeight.W_500,),
+                              alignment=ft.alignment.center,
+                              width=100,height=50,
+                              margin= ft.margin.symmetric(vertical=10),padding=0,
+                              border_radius=0,
+                              )
+            plan_con=ft.Text(event["summary"],size=30,weight=ft.FontWeight.W_100,bgcolor=bg_color,color="black",expand=True)
+            description=ft.Text(event["desc"],size=10,weight=ft.FontWeight.W_100,bgcolor=bg_color,color="black",expand=True)
             
-            list_con=ft.Row(controls=[time,plan_con,description],spacing=10)
+            plan_column=ft.Column(controls=[plan_con,description],expand=True,spacing=0)
+            #TODO ここでColmnでdescriptionを入れるかどうかはdescriptionに記述があるかどうかで分岐させる．
+            list_con=ft.Row(controls=[time,plan_column],spacing=10)
 
             self.plans.controls.append(list_con)
         return 0
-        
-class list_contents_create():
-    def __init__(self):
-        super().__init__()
-        
-        # self.calender_lsit=
-        print(10)
         

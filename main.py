@@ -4,6 +4,9 @@ import flet as ft
 
 
 def main(page: ft.Page):
+    #iPad用のwindowサイズにしておく．
+    page.window_width=1024
+    page.window_height=768
     page.horizontal_alignment=ft.CrossAxisAlignment.STRETCH
     page.title="Plan Bulletin"
     
