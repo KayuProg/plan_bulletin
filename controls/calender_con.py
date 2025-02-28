@@ -1,7 +1,7 @@
 import flet as ft
 
 #実行場所によるかも
-import calender
+import get_info.calender as calender
 
 class calender_contents():
     def __init__(self):
