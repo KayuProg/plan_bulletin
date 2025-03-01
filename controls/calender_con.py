@@ -109,7 +109,7 @@ class calender_contents():
                                 bgcolor=bg_color
                               )
                                  
-            description=ft.Container(content=ft.Text(event["desc"],size=18,weight=ft.FontWeight.W_400,color="black",expand=True),
+            description=ft.Container(content=ft.Text(event["desc"],size=18,weight=ft.FontWeight.W_500,color="black",expand=True),
                                 # alignment=ft.alignment.center,
                                 width=370,
                                 margin=0,padding=ft.padding.only(10,0,0,0),
@@ -157,7 +157,7 @@ class calender_contents():
                                 bgcolor=bg_color
                               )
                                  
-            description=ft.Container(content=ft.Text(event["desc"],size=18,weight=ft.FontWeight.W_400,color="black",expand=True),
+            description=ft.Container(content=ft.Text(event["desc"],size=18,weight=ft.FontWeight.W_500,color="black",expand=True),
                                 # alignment=ft.alignment.center,
                                 width=370,
                                 margin=0,padding=ft.padding.only(10,0,0,0),

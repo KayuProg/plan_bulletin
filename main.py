@@ -23,20 +23,13 @@ def main(page: ft.Page):
     page.add(app)
 
     while 1:
-        # calender.contents.controls.clear()
-        # calender=calender_con.calender_contents()
 
-        calender.calender_update()
+        calender.calender_update()#これを実行するとカレンダーの内容がupdateされる．
         
         page.update()
         time.sleep(2)
-        print("updated")
+
+
 
 
 ft.app(main)
-
-# if __name__ == "__main__":
-#     while 1:
-#         ft.app(main)
-#         time.sleep(1)
-#         print("updated")
