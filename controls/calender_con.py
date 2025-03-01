@@ -11,11 +11,54 @@ class calender_contents():
         ####################### main bar ########################
         
         #TODOディスプレイのサイズに合わせて文字の大きさも変わるようにしたいね．
-        self.title=ft.Text("Tosay's schedule", theme_style=ft.TextThemeStyle.HEADLINE_MEDIUM,weight=ft.FontWeight.W_500,)
+        # self.title=ft.Stack(ft.Text(spans=[ft.TextSpan("Tosay's schedule", theme_style=ft.TextThemeStyle.HEADLINE_MEDIUM,weight=ft.FontWeight.W_500,color="black"))],
+        #                     ft.Text("Tosay's schedule", theme_style=ft.TextThemeStyle.HEADLINE_MEDIUM,weight=ft.FontWeight.W_800,color="white"),)
+        
+        self.title= ft.Stack(
+            [
+                ft.Text(
+                    spans=[
+                        ft.TextSpan(
+                            "Today's schedule",
+                            ft.TextStyle(
+                                size=30,
+                                weight=ft.FontWeight.BOLD,
+                                foreground=ft.Paint(
+                                    color="black",
+                                    stroke_width=3,
+                                    stroke_join=ft.StrokeJoin.ROUND,
+                                    style=ft.PaintingStyle.STROKE,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+                ft.Text(
+                    spans=[
+                        ft.TextSpan(
+                            "Today's schedule",
+                            ft.TextStyle(
+                                size=30,
+                                weight=ft.FontWeight.BOLD,
+                                color="white",
+                            ),
+                        ),
+                    ],
+                ),
+            ]
+        )
+        
         self.title_container=ft.Container(content=self.title,alignment=ft.alignment.center)#containerを使ってTitleを中央配置
-        self.back_date=ft.IconButton(icon=ft.icons.ARROW_CIRCLE_LEFT, on_click=self.back_date_func)
-        self.forward_date=ft.IconButton(icon=ft.icons.ARROW_CIRCLE_RIGHT, on_click=self.forward_date_func)
-        self.main_bar=ft.Row(controls=[self.back_date,self.title_container,self.forward_date],alignment=ft.MainAxisAlignment.SPACE_EVENLY)
+        
+        # self.back_date=ft.IconButton(icon=ft.icons.ARROW_CIRCLE_LEFT, on_click=self.back_date_func)
+        # self.forward_date=ft.IconButton(icon=ft.icons.ARROW_CIRCLE_RIGHT, on_click=self.forward_date_func)
+        # self.main_bar=ft.Row(controls=[self.back_date,self.title_container,self.forward_date],alignment=ft.MainAxisAlignment.SPACE_EVENLY)
+        
+        decolate=ft.Icon(name=ft.icons.CALENDAR_MONTH_OUTLINED,size=45,color="#0000cd")
+        self.main_bar=ft.Container(content=ft.Row(controls=[decolate,self.title_container,decolate],alignment=ft.MainAxisAlignment.SPACE_EVENLY),
+                                   bgcolor="Green",
+                                   height=80,
+                                )
         
         ######################## incorporate ########################     
         
@@ -29,9 +72,9 @@ class calender_contents():
 
         #このself.contentsをmain.pyで呼び出して使用する．
         self.contents=ft.Column(controls=[self.main_bar,
-                                          ft.Divider(color="white",height=1.5,thickness=1.5),                                      
+                                          ft.Container(content=ft.Divider(color="white",height=1.5,thickness=1.5),margin=ft.margin.only(0,0,0,20),),
                                           self.plans
-                                        ],expand=True)
+                                        ],expand=True,spacing=0)
 
     
     def back_date_func(self,e):#TODO関数の作成
@@ -58,12 +101,30 @@ class calender_contents():
                               margin= ft.margin.symmetric(vertical=10),padding=0,
                               border_radius=0,
                               )
-            plan_con=ft.Text(event["summary"],size=30,weight=ft.FontWeight.W_100,bgcolor=bg_color,color="black",expand=True)
-            description=ft.Text(event["desc"],size=10,weight=ft.FontWeight.W_100,bgcolor=bg_color,color="black",expand=True)
+            plan_con=ft.Container(content=ft.Text(event["summary"],size=30,weight=ft.FontWeight.W_500,bgcolor=bg_color,color="black",expand=True),
+                                # alignment=ft.alignment.center,
+                                width=370,
+                                margin=ft.margin.only(0,0,0,1),padding=ft.padding.symmetric(horizontal=10),
+                                border_radius=3,
+                                bgcolor=bg_color
+                              )
+                                 
+                                 
+            description=ft.Container(content=ft.Text(event["desc"],size=18,weight=ft.FontWeight.W_400,color="black",expand=True),
+                                # alignment=ft.alignment.center,
+                                width=370,
+                                margin=0,padding=ft.padding.only(10,0,0,0),
+                                border_radius=3,
+                                bgcolor=bg_color
+                              )
+            print(event["summary"])
             
-            plan_column=ft.Column(controls=[plan_con,description],expand=True,spacing=0)
-            #TODO ここでColmnでdescriptionを入れるかどうかはdescriptionに記述があるかどうかで分岐させる．
-            list_con=ft.Row(controls=[time,plan_column],spacing=10)
+            if event["desc"]==None:#descriptionに何も記述ない場合はcolumnを作成しない．
+                plan_column=plan_con
+            else:
+                plan_column=ft.Column(controls=[plan_con,description],expand=True,spacing=0)
+
+            list_con=ft.Container(content=ft.Row(controls=[time,plan_column],spacing=10),margin=ft.margin.only(0,10,0,0))
 
             self.plans.controls.append(list_con)
         return 0
