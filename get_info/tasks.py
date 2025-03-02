@@ -8,7 +8,7 @@ import os.path
 # 読み取り権限を指定
 SCOPES = ["https://www.googleapis.com/auth/tasks"]
 
-json_pass="./jsons/tasks_token.json"
+json_pass="./get_info/jsons/tasks_token.json"
 
 def main():
     creds = None#認証情報を格納する変数

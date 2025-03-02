@@ -16,14 +16,13 @@ def main(page: ft.Page):
     
     app=ft.Row(controls=[calender.contents,
                         ft.VerticalDivider(color="white",width=1.5,thickness=1.5),#CalenderとTasksの区切り線
-                        tasks.contents]
-                  ,expand=True,spacing=0)#expandで縦画面サイズに合わせる,spacing=0でdividerの区切り消す．
+                        tasks.contents],
+                expand=True,spacing=0)#expandで縦画面サイズに合わせる,spacing=0でdividerの区切り消す．
     
 
     page.add(app)
 
     while 1:
-
         calender.calender_update()#これを実行するとカレンダーの内容がupdateされる．
         
         page.update()
