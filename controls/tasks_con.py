@@ -1,6 +1,9 @@
 import flet as ft
 import get_info.tasks as task
 
+#実行場所によるので注意
+import get_info.calender as calender
+
 class tasks_contents():
     def __init__(self):
         super().__init__()
@@ -56,17 +59,17 @@ class tasks_contents():
         ######################## incorporate ########################     
         
 
-        # self.plans=ft.Column(controls=[],expand=True)#ここに，[時間，内容，説明]のlistを入れていく
+        self.tasks=ft.Column(controls=[],expand=True)#ここにのlistを入れていく
 
         #self.plansにlistを作成する関数の実行
-        # self.calender_list_create()
+        self.tasks_list_create()
         
         self.space= ft.Placeholder(color=ft.colors.random_color(),expand=True)#一時的な場所確保
 
         #このself.contentsをmain.pyで呼び出して使用する．
         self.contents=ft.Column(controls=[self.main_bar,
                                           ft.Container(content=ft.Divider(color="white",height=1.5,thickness=1.5),margin=ft.margin.only(0,0,0,20),),
-                                        #   self.plans
+                                        #   self.tasks
                                         ],expand=True,spacing=0)
 
     
@@ -77,7 +80,9 @@ class tasks_contents():
         pass
 
     
-    def calender_list_create(self):#list_contents_createをforで繰り返してself.contentsのcolumnに入れるリスト作成
+    def tasks_list_create(self):
+        
+        
         #APIより今日の予定の情報を拾ってくる．ファイルはcalender.py
         # events=task.main()
         # list_con=[]

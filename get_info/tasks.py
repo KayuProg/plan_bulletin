@@ -4,6 +4,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 import os.path
+import datetime
 
 # 読み取り権限を指定
 SCOPES = ["https://www.googleapis.com/auth/tasks"]
@@ -31,20 +32,85 @@ def main():
         with open(json_pass, "w") as token:
             token.write(creds.to_json())
 
+
+    #######################################################
+    #実際に情報を取得する
+    #######################################################    
     try:
         service = build("tasks", "v1", credentials=creds)
+        tasklists = service.tasklists().list().execute()
+        tasklistid=None
+        for tasklist in tasklists["items"]:
+            if tasklist["title"] == "Main":
+                tasklistid = tasklist["id"]
+        # print("Task List ID is ",tasklistid)
+        
+        
+        # results = service.tasklists().list().execute()
+        
+        # tasklists = service.tasklists().list().execute()
+        
+        
+        # service.tasks().insert(tasklist='@default', body=taskdata).execute()
+        # items = results.get("items", [])
 
-        # Call the Tasks API
-        results = service.tasklists().list(maxResults=10).execute()
-        items = results.get("items", [])
+        # if not items:
+        #     print("No task lists found.")
+        #     return
 
-        if not items:
-            print("No task lists found.")
-            return
+        # print("Task lists:")
+        # for item in items:
+        #     print(f"{item['title']} ({item['id']})")
+            
+        tasks = []
+        nextpagetoken = None
+        
+        now=datetime.datetime.utcnow()+datetime.timedelta(hours=9)#時刻の補正は行わない．本来はhours=9
+        today =now.replace(hour=0,minute=0,second=0, microsecond=0).isoformat() + "Z"  # 'Z' indicates UTC time
+        next_day= (now + datetime.timedelta(days=1)).replace(hour=0,minute=0,second=0, microsecond=0).isoformat()+"Z"
 
-        print("Task lists:")
-        for item in items:
-            print(f"{item['title']} ({item['id']})")
+        
+        while True:
+            response = (
+                service.tasks()
+                .list(
+                    tasklist=tasklistid,
+                    # dueMin=today,
+                    # dueMax=next_day,
+                    showCompleted=True,
+                    showDeleted=False,
+                    showHidden=True,
+                    # maxResults=100,
+                    pageToken=nextpagetoken,
+                )
+                .execute()
+            )
+            tasks.extend(response.get("items"))
+            nextpagetoken = response.get("nextPageToken")
+            if not nextpagetoken:
+                break
+        
+        display_tasks=[]
+        for task in tasks:
+            task_info=[]#taskの情報を格納する．
+            title=task.get("title")
+            note=task.get("notes")
+            status=task.get("status")
+            due=task.get("due")
+            due_check="not expired"#期限が切れていたら"expired"，切れていなかったら"not expired"と表示する．
+            if due<today:#今日やるタスクもexpiredにしておく．
+                # print(due,"   ",today)
+                due_check="expired"
+            task_info={"title":title,"note":note,"status":status,"due":due,"due_check":due_check}
+            
+            display_tasks.append(task_info)
+            # print(task.get("title")," \n")
+        
+        # print(display_tasks)
+
+        return display_tasks
+            
+            
     except HttpError as err:
         print(err)
 
