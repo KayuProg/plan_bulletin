@@ -76,7 +76,7 @@ def main():
                 .list(
                     tasklist=tasklistid,
                     # dueMin=today,
-                    # dueMax=next_day,
+                    dueMax=next_day,#今日までのタスクを取得する．
                     showCompleted=True,
                     showDeleted=False,
                     showHidden=True,
@@ -97,9 +97,12 @@ def main():
             note=task.get("notes")
             status=task.get("status")
             due=task.get("due")
-            due_check="not expired"#期限が切れていたら"expired"，切れていなかったら"not expired"と表示する．
-            if due<today:#今日やるタスクもexpiredにしておく．
-                # print(due,"   ",today)
+            due_check="not_expired"#期限が切れていたら"expired"，切れていなかったら"not expired"と表示する．due_dateとtoday_dateの比較文の関係から初期値をexpireに設定
+            
+            due_date=datetime.datetime.fromisoformat(due).strftime("%m-%d")
+            today_date=datetime.datetime.fromisoformat(today).strftime("%m-%d")
+            if due_date != today_date:#今日以外のtaskはexpired
+                print(due_date,"   ",today_date)
                 due_check="expired"
             task_info={"title":title,"note":note,"status":status,"due":due,"due_check":due_check}
             

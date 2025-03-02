@@ -1,11 +1,11 @@
 import flet as ft
 import get_info.tasks as task
-
+import datetime
 #実行場所によるので注意
-import get_info.calender as calender
+import get_info.tasks as tasks
 
 class tasks_contents():
-    def __init__(self):
+    def __init__(self,page):
         super().__init__()
   ####################### main bar ########################
         
@@ -13,6 +13,7 @@ class tasks_contents():
         # self.title=ft.Stack(ft.Text(spans=[ft.TextSpan("Tosay's schedule", theme_style=ft.TextThemeStyle.HEADLINE_MEDIUM,weight=ft.FontWeight.W_500,color="black"))],
         #                     ft.Text("Tosay's schedule", theme_style=ft.TextThemeStyle.HEADLINE_MEDIUM,weight=ft.FontWeight.W_800,color="white"),)
         
+        self.page=page
         self.title= ft.Stack(
             [
                 ft.Text(
@@ -59,71 +60,106 @@ class tasks_contents():
         ######################## incorporate ########################     
         
 
-        self.tasks=ft.Column(controls=[],expand=True)#ここにのlistを入れていく
+        self.display_flag=1#1の時にはremainが表示されている．0のときにはcompletedが表示されている．
+        self.remain=ft.Column(controls=[],expand=True)
+        self.completed=ft.Text("completed",size=18,weight=ft.FontWeight.W_500,color="white",expand=True)
+        
+        self.tasks_list=ft.Column(controls=[self.remain],expand=True)#ここにのlistを入れていく
+
 
         #self.plansにlistを作成する関数の実行
         self.tasks_list_create()
         
-        self.space= ft.Placeholder(color=ft.colors.random_color(),expand=True)#一時的な場所確保
+        self.change_button=ft.Container(content=ft.ElevatedButton(text="Change Display",on_click=self.change_display,
+                                                                  style=ft.ButtonStyle(text_style=ft.TextStyle(size=20)),
+                                                                  bgcolor="#65656565"),
+                                        alignment=ft.alignment.top_right,
+                                        )
+        
+        # self.space= ft.Placeholder(color=ft.colors.random_color(),expand=True)#一時的な場所確保
 
         #このself.contentsをmain.pyで呼び出して使用する．
         self.contents=ft.Column(controls=[self.main_bar,
                                           ft.Container(content=ft.Divider(color="white",height=1.5,thickness=1.5),margin=ft.margin.only(0,0,0,20),),
-                                        #   self.tasks
+                                        self.change_button,
+                                        self.tasks_list
                                         ],expand=True,spacing=0)
 
-    
-    def back_date_func(self,e):#TODO関数の作成
-        pass
-    
-    def forward_date_func(self,e):#TODO関数の作成
-        pass
+    def change_display(self,e):
+        self.tasks_list.controls.clear()
+        if self.display_flag==1:
+            self.tasks_list.controls.append(self.completed)
+            self.display_flag=0
+        elif self.display_flag==0:
+            self.tasks_list.controls.append(self.remain)
+            self.display_flag=1
+        self.page.update()
 
     
     def tasks_list_create(self):
+        #APIからtasksを取得する．
+        events=tasks.main()
+        list_con=[]      
         
-        
-        #APIより今日の予定の情報を拾ってくる．ファイルはcalender.py
-        # events=task.main()
-        # list_con=[]
-        # for event in events:
-        #     event_time=datetime.datetime.fromisoformat(event["date"]).strftime("%H:%M")
-        #     if event_time=="00:00":
-        #         event_time="All day"
-
-        #     bg_color=event["color"]
+        for event in events:
+            title=event["title"]
+            note=event["note"]
+            status=event["status"]#needsAction or cpmleted
+            due_check=event["due_check"]#not_expired or expired
+           
+            due=event["due"] 
+            due_date=datetime.datetime.fromisoformat(due).strftime("%m-%d")
+            today=datetime.datetime.today().strftime("%m-%d")
             
-        #     time=ft.Container(content=ft.Text(event_time,size=25,weight=ft.FontWeight.W_500,),
-        #                       alignment=ft.alignment.center,
-        #                       width=100,height=50,
-        #                       margin= ft.margin.symmetric(vertical=10),padding=0,
-        #                       border_radius=0,
-        #                       )
-        #     plan_con=ft.Container(content=ft.Text(event["summary"],size=30,weight=ft.FontWeight.W_500,bgcolor=bg_color,color="black",expand=True),
-        #                         # alignment=ft.alignment.center,
-        #                         width=370,
-        #                         margin=ft.margin.only(0,0,0,1),padding=ft.padding.symmetric(horizontal=10),
-        #                         border_radius=3,
-        #                         bgcolor=bg_color
-        #                       )
-                                 
-        #     description=ft.Container(content=ft.Text(event["desc"],size=18,weight=ft.FontWeight.W_500,color="black",expand=True),
-        #                         # alignment=ft.alignment.center,
-        #                         width=370,
-        #                         margin=0,padding=ft.padding.only(10,0,0,0),
-        #                         border_radius=3,
-        #                         bgcolor=bg_color
-        #                       )
-        #     # print(plan_con.content.value)
+            print(due_date)
+            
+            #########################################################
+            #control作成
+            #########################################################
+            due_date_control=ft.Container(content=ft.Text(due_date,size=25,weight=ft.FontWeight.W_500,),
+                              alignment=ft.alignment.center,
+                            #   width=100,height=50,
+                            #   margin= ft.margin.symmetric(vertical=10),padding=0,
+                            #   border_radius=0,
+                              )
+            
+            if due_check=="expired":#期限切れ
+                title_control=ft.Container(content=ft.Text(title,size=25,weight=ft.FontWeight.W_500,color="red"),
+                                alignment=ft.alignment.center,
+                            #   width=100,height=50,
+                            #   margin= ft.margin.symmetric(vertical=10),padding=0,
+                            #   border_radius=0,
+                                )
+            elif due_check=="not_expired":
+                title_control=ft.Container(content=ft.Text(title,size=25,weight=ft.FontWeight.W_500,),
+                                alignment=ft.alignment.center,
+                            #   width=100,height=50,
+                            #   margin= ft.margin.symmetric(vertical=10),padding=0,
+                            #   border_radius=0,
+                                )
+            
+            note_control=ft.Container(content=ft.Text(note,size=25,weight=ft.FontWeight.W_500,),
+                            alignment=ft.alignment.center,
+                        #   width=100,height=50,
+                        #   margin= ft.margin.symmetric(vertical=10),padding=0,
+                        #   border_radius=0,
+                            )
+            
+            btn= ft.Switch(value=False,on_change=self.button_clicked)
+            
             
         #     if event["desc"]==None:#descriptionに何も記述ない場合はcolumnを作成しない．
         #         plan_column=plan_con
         #     else:
         #         plan_column=ft.Column(controls=[plan_con,description],expand=True,spacing=0)
 
-        #     list_con=ft.Container(content=ft.Row(controls=[time,plan_column],spacing=10),margin=ft.margin.only(0,10,0,0))
+            list_con=ft.Container(content=ft.Row(controls=[due_date_control,title_control,btn],spacing=0),margin=ft.margin.only(0,0,0,0))
 
-        #     self.plans.controls.append(list_con)
+            self.remain.controls.append(list_con)
+        return 0
+    
+    def button_clicked(self,e):#ここでcontrolのvisibleをいじって画面の切り替えをしたい．visible falseの時はイベントも発火しないらしい．
+        print("changed")
         return 0
         
         
