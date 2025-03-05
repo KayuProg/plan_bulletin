@@ -1,50 +1,96 @@
-import flet as ft
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
+import os.path
+import datetime
+import urllib.parse  # URLエンコード用
 
-te="kdkdk"
-def main(page: ft.Page):
-    def add_clicked(e):
-        page.add(ft.Checkbox(label=new_task.value))
-        new_task.value = ""+"あ"
-        global te
-        te=te+"3939"
-        a.value=te
-        print(te)
-        page.update()
+# 読み取り権限を指定
+SCOPES = ["https://www.googleapis.com/auth/tasks"]
 
-    new_task = ft.TextField(hint_text="What's needs to be done?")
-    a=ft.Text(te,size=25,weight=ft.FontWeight.W_500,)
-    page.add(new_task, ft.FloatingActionButton(icon=ft.icons.ADD, on_click=add_clicked))
-    page.add(a)
-ft.app(main)
+json_pass = "./get_info/jsons/tasks_token.json"
+service = None
 
-# import flet as ft
-
-# te = "kdkdk"  # グローバルな変数
-
-# def main(page: ft.Page):
-#     def add_clicked(e):
-#         # チェックボックスを追加
-#         page.add(ft.Checkbox(label=new_task.value))
-        
-#         # テキストフィールドをクリア
-#         new_task.value = ""
-
-#         # グローバル変数 te に "3939" を追加
-#         global te
-#         te = te + "3939"
-        
-#         # 画面上のテキストを更新
-#         a.value = te
-        
-#         # 更新を反映
-#         page.update()
-
-#     # テキストフィールドとボタンを作成
-#     new_task = ft.TextField(hint_text="What's needs to be done?")
-#     a = ft.Text(te, size=25, weight=ft.FontWeight.W_500)  # 初期値として "kdkdk" を表示
+def main():
+    creds = None
+    # トークンファイルが存在するか確認
+    if os.path.exists(json_pass):
+        creds = Credentials.from_authorized_user_file(json_pass, SCOPES)
     
-#     # UIに追加
-#     page.add(new_task, ft.FloatingActionButton(icon=ft.icons.ADD, on_click=add_clicked))
-#     page.add(a)
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file("./get_info/jsons/parent.json", SCOPES)
+            creds = flow.run_local_server(port=0)
+        with open(json_pass, "w") as token:
+            token.write(creds.to_json())
 
-# ft.app(target=main)
+    try:
+        global service
+        service = build("tasks", "v1", credentials=creds)
+        tasklists = service.tasklists().list().execute()
+        tasklistid = None
+
+        count=0
+        # "Main"というタスクリストを探す
+        for tasklist in tasklists["items"]:
+            # print(count)
+            if tasklist["title"] == "Main":
+                tasklistid = tasklist["id"]
+                # print(3)
+            count+=1
+            
+    
+
+        tasks = []
+        nextpagetoken = None
+        now = datetime.datetime.utcnow() + datetime.timedelta(hours=9)
+        today = now.replace(hour=0, minute=0, second=0, microsecond=0).isoformat() + "Z"
+        next_day = (now + datetime.timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0).isoformat() + "Z"
+
+        while True:
+            response = service.tasks().list(
+                tasklist=tasklistid,
+                dueMax=next_day,
+                showCompleted=True,
+                showDeleted=False,
+                showHidden=True,
+                pageToken=nextpagetoken
+            ).execute()
+
+            tasks.extend(response.get("items", []))
+            nextpagetoken = response.get("nextPageToken")
+            if not nextpagetoken:
+                break
+        
+        # print("\n",tasks[0],"\n")
+
+        # 任意のタスクを選んで task_id を確認
+        task_id = tasks[0].get("id") 
+                
+        a=service.tasks().get(tasklist=tasklistid,task=task_id).execute()
+        print("\na is ",a,"\n")        
+
+        if task_id:
+            print(f"\nTask ID:{task_id}, Tasklist ID:{tasklistid}\n")
+            try:
+                service.tasks().patch(
+                tasklist=tasklistid,
+                task=task_id,
+                body={"status": "completed"}  # ステータスを "completed" に設定
+                ).execute()
+
+            except HttpError as err:
+                    print("error is ",err)
+        else:
+            print("Task ID not found.")
+
+    except HttpError as err:
+        print(f"Error: {err}")
+
+
+if __name__ == "__main__":
+    main()

@@ -126,13 +126,15 @@ def change_status(tasklist_id,task_id,status,btn_value):
     print(tasklist_id)
     print(f"\nTask ID: {task_id}, Status: {status}, Checked: {btn_value}\n")
     
-    
-    a=service.tasks().update(
+    a=task_id
+    print(a)
+    print(type(a))
+    service.tasks().update(
         tasklist=tasklist_id,
-        task=task_id,
+        task=a,
         body={"status": "completed"}
     ).execute()
-    print("\n",a,"\n")
+    print("\n","\n")
     print(0)
     pass
 if __name__ == "__main__":
