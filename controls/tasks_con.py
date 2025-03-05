@@ -113,9 +113,6 @@ class tasks_contents():
             due_date=datetime.datetime.fromisoformat(due).strftime("%m-%d")
             today=datetime.datetime.today().strftime("%m-%d")
             
-            
-            tasklist_id=event["tasklist_id"]
-            task_id=event["task_id"]
             # print(due_date)
             
             #########################################################
@@ -150,8 +147,7 @@ class tasks_contents():
                         #   border_radius=0,
                             )
             
-            btn= ft.Switch(value=False,on_change=lambda e, tsid=tasklist_id, tid=task_id or "", ts=status
-                           :tasks.change_status(tsid, tid, ts,e.control.value))
+            btn= ft.Switch(value=False,on_change=self.task_complete)
             
             
         #     if event["desc"]==None:#descriptionに何も記述ない場合はcolumnを作成しない．
@@ -164,6 +160,9 @@ class tasks_contents():
             self.remain.controls.append(list_con)
         return 0
     
+    def task_complete(self,e):
+        
+        return 0
         
         
     def calender_update(self):
