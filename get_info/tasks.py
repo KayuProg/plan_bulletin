@@ -16,6 +16,8 @@ SCOPES = ["https://www.googleapis.com/auth/tasks"]
 
 json_pass="./get_info/jsons/tasks_token.json"
 
+service=None
+
 def main():
     creds = None#認証情報を格納する変数
     # トークンファイルを確認して認証情報をロード
@@ -37,6 +39,7 @@ def main():
     #実際に情報を取得する
     #######################################################    
     try:
+        global service
         service = build("tasks", "v1", credentials=creds)
         tasklists = service.tasklists().list().execute()
         tasklistid=None
@@ -104,7 +107,7 @@ def main():
             due_date=datetime.datetime.fromisoformat(due).strftime("%m-%d")
             today_date=datetime.datetime.fromisoformat(today).strftime("%m-%d")
             if due_date != today_date:#今日以外のtaskはexpired
-                print(due_date,"   ",today_date)
+                # print(due_date,"   ",today_date)
                 due_check="expired"
             task_info={"title":title,"note":note,"status":status,"due":due,"due_check":due_check,"tasklist_id":tasklistid,"task_id":task_id}
             
@@ -118,7 +121,20 @@ def main():
             
     except HttpError as err:
         print(err)
-
+        
+def change_status(tasklist_id,task_id,status,btn_value):
+    print(tasklist_id)
+    print(f"\nTask ID: {task_id}, Status: {status}, Checked: {btn_value}\n")
+    
+    
+    a=service.tasks().update(
+        tasklist=tasklist_id,
+        task=task_id,
+        body={"status": "completed"}
+    ).execute()
+    print("\n",a,"\n")
+    print(0)
+    pass
 if __name__ == "__main__":
     main()
 
