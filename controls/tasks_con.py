@@ -102,6 +102,8 @@ class tasks_contents():
         list_con=[]      
         
         for event in events:
+            print(event)
+            
             title=event["title"]
             note=event["note"]
             status=event["status"]#needsAction or cpmleted
@@ -111,7 +113,7 @@ class tasks_contents():
             due_date=datetime.datetime.fromisoformat(due).strftime("%m-%d")
             today=datetime.datetime.today().strftime("%m-%d")
             
-            print(due_date)
+            # print(due_date)
             
             #########################################################
             #control作成
@@ -145,7 +147,7 @@ class tasks_contents():
                         #   border_radius=0,
                             )
             
-            btn= ft.Switch(value=False,on_change=self.button_clicked)
+            btn= ft.Switch(value=False,on_change=self.task_complete)
             
             
         #     if event["desc"]==None:#descriptionに何も記述ない場合はcolumnを作成しない．
@@ -158,8 +160,8 @@ class tasks_contents():
             self.remain.controls.append(list_con)
         return 0
     
-    def button_clicked(self,e):#ここでcontrolのvisibleをいじって画面の切り替えをしたい．visible falseの時はイベントも発火しないらしい．
-        print("changed")
+    def task_complete(self,e):
+        
         return 0
         
         
