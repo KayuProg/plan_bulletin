@@ -108,6 +108,8 @@ class tasks_contents():
             note=event["note"]
             status=event["status"]#needsAction or cpmleted
             due_check=event["due_check"]#not_expired or expired
+            
+            task_id=event["task_id"]
            
             due=event["due"] 
             due_date=datetime.datetime.fromisoformat(due).strftime("%m-%d")
@@ -147,7 +149,11 @@ class tasks_contents():
                         #   border_radius=0,
                             )
             
-            btn= ft.Switch(value=False,on_change=self.task_complete)
+            if status=="needsAction":
+                btn= ft.Switch(value=False,on_change=lambda e,tid=task_id, ts=status:tasks.change_status(tid, ts,e.control.value))
+            elif status=="completed":
+                btn= ft.Switch(value=True,on_change=lambda e,tid=task_id, ts=status:tasks.change_status(tid, ts,e.control.value))
+                
             
             
         #     if event["desc"]==None:#descriptionに何も記述ない場合はcolumnを作成しない．

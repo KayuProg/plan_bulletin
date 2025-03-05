@@ -17,6 +17,8 @@ SCOPES = ["https://www.googleapis.com/auth/tasks"]
 json_pass="./get_info/jsons/tasks_token.json"
 
 service=None
+tasklistid=None
+
 
 def main():
     creds = None#認証情報を格納する変数
@@ -42,29 +44,13 @@ def main():
         global service
         service = build("tasks", "v1", credentials=creds)
         tasklists = service.tasklists().list().execute()
-        tasklistid=None
+        global tasklistid
         for tasklist in tasklists["items"]:
             # print(tasklist)
             if tasklist["title"] == "Main":
                 tasklistid = tasklist["id"]
         # print("Task List ID is ",tasklistid)
-        
-        
-        # results = service.tasklists().list().execute()
-        
-        # tasklists = service.tasklists().list().execute()
-        
-        
-        # service.tasks().insert(tasklist='@default', body=taskdata).execute()
-        # items = results.get("items", [])
-
-        # if not items:
-        #     print("No task lists found.")
-        #     return
-
-        # print("Task lists:")
-        # for item in items:
-        #     print(f"{item['title']} ({item['id']})")
+    
             
         tasks = []
         nextpagetoken = None
@@ -122,21 +108,26 @@ def main():
     except HttpError as err:
         print(err)
         
-def change_status(tasklist_id,task_id,status,btn_value):
-    print(tasklist_id)
-    print(f"\nTask ID: {task_id}, Status: {status}, Checked: {btn_value}\n")
+def change_status(task_id,status,btn_value):
+    # print(tasklist_id)
+    print(f"\nTasklist ID: {tasklistid},Task ID:{task_id} Status: {status}, Checked: {btn_value}\n")
     
-    a=task_id
-    print(a)
-    print(type(a))
-    service.tasks().update(
-        tasklist=tasklist_id,
-        task=a,
-        body={"status": "completed"}
+    if btn_value:
+        overwrite_status="completed"
+    else :
+        overwrite_status="needsAction"
+    
+    service.tasks().patch(
+        tasklist=tasklistid,
+        task=task_id,
+        body={"status": f"{overwrite_status}"}
     ).execute()
-    print("\n","\n")
-    print(0)
-    pass
+    
+    return 0
+    
+    
+    
+    
 if __name__ == "__main__":
     main()
 
