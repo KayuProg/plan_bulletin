@@ -1,6 +1,7 @@
 import flet as ft
 import get_info.tasks as task
 import datetime
+import time
 #実行場所によるので注意
 import get_info.tasks as tasks
 
@@ -14,39 +15,36 @@ class tasks_contents():
         #                     ft.Text("Tosay's schedule", theme_style=ft.TextThemeStyle.HEADLINE_MEDIUM,weight=ft.FontWeight.W_800,color="white"),)
         
         self.page=page
-        self.title= ft.Stack(
-            [
-                ft.Text(
-                    spans=[
-                        ft.TextSpan(
-                            "Remaining Tasks",
-                            ft.TextStyle(
-                                size=30,
-                                weight=ft.FontWeight.BOLD,
-                                foreground=ft.Paint(
-                                    color="black",
-                                    stroke_width=3,
-                                    stroke_join=ft.StrokeJoin.ROUND,
-                                    style=ft.PaintingStyle.STROKE,
-                                ),
-                            ),
+        self.title_text_black = ft.Text(
+            spans=[
+                ft.TextSpan(
+                    "Remaining Tasks",
+                    ft.TextStyle(
+                        size=30,
+                        weight=ft.FontWeight.BOLD,
+                        foreground=ft.Paint(
+                            color="black",
+                            stroke_width=3,
+                            stroke_join=ft.StrokeJoin.ROUND,
+                            style=ft.PaintingStyle.STROKE,
                         ),
-                    ],
+                    ),
                 ),
-                ft.Text(
-                    spans=[
-                        ft.TextSpan(
-                            "Remaining Tasks",
-                            ft.TextStyle(
-                                size=30,
-                                weight=ft.FontWeight.BOLD,
-                                color="white",
-                            ),
-                        ),
-                    ],
-                ),
-            ]
+            ],
         )
+        self.title_text_white = ft.Text(
+            spans=[
+                ft.TextSpan(
+                    "Remaining Tasks",
+                    ft.TextStyle(
+                        size=30,
+                        weight=ft.FontWeight.BOLD,
+                        color="white",
+                    ),
+                ),
+            ],
+        )
+        self.title = ft.Stack([self.title_text_black, self.title_text_white])
         
         self.title_container=ft.Container(content=self.title,alignment=ft.alignment.center)#containerを使ってTitleを中央配置   
         decolate=ft.Icon(name=ft.icons.TASK_ALT,size=40,color="#0000cd")
@@ -62,7 +60,7 @@ class tasks_contents():
 
         self.display_flag=1#1の時にはremainが表示されている．0のときにはcompletedが表示されている．
         self.remain=ft.Column(controls=[],expand=True)
-        self.completed=ft.Text("completed",size=18,weight=ft.FontWeight.W_500,color="white",expand=True)
+        self.completed=ft.Column(controls=[],expand=True)
         
         self.tasks_list=ft.Column(controls=[self.remain],expand=True)#ここにのlistを入れていく
 
@@ -85,18 +83,30 @@ class tasks_contents():
                                         self.tasks_list
                                         ],expand=True,spacing=0)
 
-    def change_display(self,e):
+    def change_display(self,e):        
         self.tasks_list.controls.clear()
-        if self.display_flag==1:
+        if self.display_flag==1:#消化済みタスク
             self.tasks_list.controls.append(self.completed)
             self.display_flag=0
-        elif self.display_flag==0:
+            self.title_text_black.spans[0].text = "Completed Tasks"
+            self.title_text_white.spans[0].text = "Completed Tasks"
+            self.main_bar.bgcolor = "red"
+
+        elif self.display_flag==0:#未消化タスク
             self.tasks_list.controls.append(self.remain)
             self.display_flag=1
+            self.title_text_black.spans[0].text = "Remaining Tasks"
+            self.title_text_white.spans[0].text = "Remaining Tasks"
+            self.main_bar.bgcolor = "blue"
+
         self.page.update()
 
     
     def tasks_list_create(self):
+        self.remain.controls.clear()
+        self.completed.controls.clear()
+
+
         #APIからtasksを取得する．
         events=tasks.main()
         list_con=[]      
@@ -150,9 +160,9 @@ class tasks_contents():
                             )
             
             if status=="needsAction":
-                btn= ft.Switch(value=False,on_change=lambda e,tid=task_id, ts=status:tasks.change_status(tid, ts,e.control.value))
+                btn= ft.Switch(value=False,on_change=lambda e,tid=task_id, ts=status:self.task_complete(tid, ts,e.control.value))
             elif status=="completed":
-                btn= ft.Switch(value=True,on_change=lambda e,tid=task_id, ts=status:tasks.change_status(tid, ts,e.control.value))
+                btn= ft.Switch(value=True,on_change=lambda e,tid=task_id, ts=status:self.task_complete(tid, ts,e.control.value))
                 
             
             
@@ -163,10 +173,20 @@ class tasks_contents():
 
             list_con=ft.Container(content=ft.Row(controls=[due_date_control,title_control,btn],spacing=0),margin=ft.margin.only(0,0,0,0))
 
-            self.remain.controls.append(list_con)
+            if status=="needsAction":
+                self.remain.controls.append(list_con)
+
+            elif status=="completed":
+                self.completed.controls.append(list_con)
+                
         return 0
     
-    def task_complete(self,e):
+    def task_complete(self,tid,ts,val):
+        tasks.change_status(tid, ts,val)
+        #ここにtasksの表示をupdateする関数の実行を書く．
+        time.sleep(2)
+        self.tasks_list_create()
+        self.page.update()
         
         return 0
         
