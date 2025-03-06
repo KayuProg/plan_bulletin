@@ -1,5 +1,6 @@
 import flet as ft
 import datetime
+import asyncio
 
 #実行場所によるので注意
 import get_info.calender as calender
@@ -66,7 +67,7 @@ class calender_contents():
         self.plans=ft.Column(controls=[],expand=True)#ここに，[時間，内容，説明]のlistを入れていく
 
         #self.plansにlistを作成する関数の実行
-        self.calender_list_create()
+        # self.calender_list_create()
         
         self.space= ft.Placeholder(color=ft.colors.random_color(),expand=True)#一時的な場所確保
 
@@ -84,9 +85,9 @@ class calender_contents():
         pass
 
     
-    def calender_list_create(self):#list_contents_createをforで繰り返してself.contentsのcolumnに入れるリスト作成
-        
-                
+    async def calender_list_create(self):#list_contents_createをforで繰り返してself.contentsのcolumnに入れるリスト作成
+        self.plans.controls.clear()
+   
         events=calender.main()
         list_con=[]
         for event in events:
@@ -129,50 +130,52 @@ class calender_contents():
         return 0
         
         
-    def calender_update(self):
-        #self.plansを初期化
-        self.plans.controls.clear()
+    # self.plans.controls.clear()をlist create関数に組み込んだためupdate用の関数いらない．
         
-        # print("initialize")
-        events=calender.main()
-        # list_con=[]
-        for event in events:
-            event_time=datetime.datetime.fromisoformat(event["date"]).strftime("%H:%M")
-            if event_time=="00:00":
-                event_time="All day"
+    # def calender_update(self):
+    #     #self.plansを初期化
+    #     self.plans.controls.clear()
+        
+    #     # print("initialize")
+    #     events=calender.main()
+    #     # list_con=[]
+    #     for event in events:
+    #         event_time=datetime.datetime.fromisoformat(event["date"]).strftime("%H:%M")
+    #         if event_time=="00:00":
+    #             event_time="All day"
 
-            bg_color=event["color"]
+    #         bg_color=event["color"]
             
-            time=ft.Container(content=ft.Text(event_time,size=25,weight=ft.FontWeight.W_500,),
-                              alignment=ft.alignment.center,
-                              width=100,height=50,
-                              margin= ft.margin.symmetric(vertical=10),padding=0,
-                              border_radius=0,
-                              )
-            plan_con=ft.Container(content=ft.Text(event["summary"],size=30,weight=ft.FontWeight.W_500,bgcolor=bg_color,color="black",expand=True),
-                                # alignment=ft.alignment.center,
-                                width=370,
-                                margin=ft.margin.only(0,0,0,1),padding=ft.padding.symmetric(horizontal=10),
-                                border_radius=3,
-                                bgcolor=bg_color
-                              )
+    #         time=ft.Container(content=ft.Text(event_time,size=25,weight=ft.FontWeight.W_500,),
+    #                           alignment=ft.alignment.center,
+    #                           width=100,height=50,
+    #                           margin= ft.margin.symmetric(vertical=10),padding=0,
+    #                           border_radius=0,
+    #                           )
+    #         plan_con=ft.Container(content=ft.Text(event["summary"],size=30,weight=ft.FontWeight.W_500,bgcolor=bg_color,color="black",expand=True),
+    #                             # alignment=ft.alignment.center,
+    #                             width=370,
+    #                             margin=ft.margin.only(0,0,0,1),padding=ft.padding.symmetric(horizontal=10),
+    #                             border_radius=3,
+    #                             bgcolor=bg_color
+    #                           )
                                  
-            description=ft.Container(content=ft.Text(event["desc"],size=18,weight=ft.FontWeight.W_500,color="black",expand=True),
-                                # alignment=ft.alignment.center,
-                                width=370,
-                                margin=0,padding=ft.padding.only(10,0,0,0),
-                                border_radius=3,
-                                bgcolor=bg_color
-                              )
-            # print(plan_con.content.value)
+    #         description=ft.Container(content=ft.Text(event["desc"],size=18,weight=ft.FontWeight.W_500,color="black",expand=True),
+    #                             # alignment=ft.alignment.center,
+    #                             width=370,
+    #                             margin=0,padding=ft.padding.only(10,0,0,0),
+    #                             border_radius=3,
+    #                             bgcolor=bg_color
+    #                           )
+    #         # print(plan_con.content.value)
             
-            if event["desc"]==None:#descriptionに何も記述ない場合はcolumnを作成しない．
-                plan_column=plan_con
-            else:
-                plan_column=ft.Column(controls=[plan_con,description],expand=True,spacing=0)
+    #         if event["desc"]==None:#descriptionに何も記述ない場合はcolumnを作成しない．
+    #             plan_column=plan_con
+    #         else:
+    #             plan_column=ft.Column(controls=[plan_con,description],expand=True,spacing=0)
 
-            list_con=ft.Container(content=ft.Row(controls=[time,plan_column],spacing=10),margin=ft.margin.only(0,10,0,0))
-            # print(event["summary"])
-            self.plans.controls.append(list_con)
+    #         list_con=ft.Container(content=ft.Row(controls=[time,plan_column],spacing=10),margin=ft.margin.only(0,10,0,0))
+    #         # print(event["summary"])
+    #         self.plans.controls.append(list_con)
         
-        # print("added")
+    #     # print("added")

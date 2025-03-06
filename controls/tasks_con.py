@@ -2,6 +2,8 @@ import flet as ft
 import get_info.tasks as task
 import datetime
 import time
+import asyncio
+
 #実行場所によるので注意
 import get_info.tasks as tasks
 
@@ -66,7 +68,7 @@ class tasks_contents():
 
 
         #self.plansにlistを作成する関数の実行
-        self.tasks_list_create()
+        # self.tasks_list_create()
         
         self.change_button=ft.Container(content=ft.ElevatedButton(text="Change Display",on_click=self.change_display,
                                                                   style=ft.ButtonStyle(text_style=ft.TextStyle(size=20)),
@@ -103,7 +105,7 @@ class tasks_contents():
         self.page.update()
 
     
-    def tasks_list_create(self):
+    async def tasks_list_create(self):
         
         self.remain.controls.clear()
         self.completed.controls.clear()
@@ -176,9 +178,12 @@ class tasks_contents():
             
             
             if status=="needsAction":
-                btn= ft.Switch(value=False,on_change=lambda e,tid=task_id, ts=status:self.task_complete(tid, ts,e.control.value))
+                # btn= ft.Switch(value=False,on_change=lambda e,tid=task_id, ts=status :asyncio.create_task(self.handle_task_complete(tid, ts,e.control.value)))
+                btn= ft.Switch(value=False,on_change=lambda e,tid=task_id, ts=status :self.task_complete(tid, ts,e.control.value))
+
             elif status=="completed":
-                btn= ft.Switch(value=True,on_change=lambda e,tid=task_id, ts=status:self.task_complete(tid, ts,e.control.value))
+                # btn= ft.Switch(value=True,on_change=lambda e,tid=task_id, ts=status :asyncio.create_task(self.handle_task_complete(tid, ts,e.control.value)))
+                btn= ft.Switch(value=True,on_change=lambda e,tid=task_id, ts=status :self.task_complete(tid, ts,e.control.value))
                 
             
             
@@ -196,11 +201,14 @@ class tasks_contents():
                 self.completed.controls.append(list_con)
                 
         return 0
+
+
     
     def task_complete(self,tid,ts,val):
-        tasks.change_status(tid, ts,val)
-        #ここにtasksの表示をupdateする関数の実行を書く．
-        time.sleep(1.5)#スライドスイッチの変化がGoogle Tasksに反映されるまで待つ
+        print(1)
+        tasks.change_status(tid, ts, val)  # 非同期関数として呼び出し
+        print(2)
+        # スライドスイッチの変化がGoogle Tasksに反映されるまで少し待つ
         self.tasks_list_create()
         self.page.update()
         
