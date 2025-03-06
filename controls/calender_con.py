@@ -85,7 +85,8 @@ class calender_contents():
 
     
     def calender_list_create(self):#list_contents_createをforで繰り返してself.contentsのcolumnに入れるリスト作成
-        #APIより今日の予定の情報を拾ってくる．ファイルはcalender.py
+        
+                
         events=calender.main()
         list_con=[]
         for event in events:
@@ -107,8 +108,7 @@ class calender_contents():
                                 margin=ft.margin.only(0,0,0,1),padding=ft.padding.symmetric(horizontal=10),
                                 border_radius=3,
                                 bgcolor=bg_color
-                              )
-                                 
+                              )        
             description=ft.Container(content=ft.Text(event["desc"],size=18,weight=ft.FontWeight.W_500,color="black",expand=True),
                                 # alignment=ft.alignment.center,
                                 width=370,

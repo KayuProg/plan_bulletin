@@ -103,6 +103,7 @@ class tasks_contents():
 
     
     def tasks_list_create(self):
+        
         self.remain.controls.clear()
         self.completed.controls.clear()
 
@@ -112,7 +113,7 @@ class tasks_contents():
         list_con=[]      
         
         for event in events:
-            print(event)
+            # print(event)
             
             title=event["title"]
             note=event["note"]
@@ -184,7 +185,7 @@ class tasks_contents():
     def task_complete(self,tid,ts,val):
         tasks.change_status(tid, ts,val)
         #ここにtasksの表示をupdateする関数の実行を書く．
-        time.sleep(2)
+        time.sleep(1.5)#スライドスイッチの変化がGoogle Tasksに反映されるまで待つ
         self.tasks_list_create()
         self.page.update()
         

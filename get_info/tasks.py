@@ -115,7 +115,7 @@ def main():
         
 def change_status(task_id,status,btn_value):
     # print(tasklist_id)
-    print(f"\nTasklist ID: {tasklistid},Task ID:{task_id} Status: {status}, Checked: {btn_value}\n")
+    # print(f"\nTasklist ID: {tasklistid},Task ID:{task_id} Status: {status}, Checked: {btn_value}\n")
     
     if btn_value:
         overwrite_status="completed"
