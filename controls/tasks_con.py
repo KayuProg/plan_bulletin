@@ -89,7 +89,6 @@ class tasks_contents():
                                                                   bgcolor="#65656565"),
                                         margin=ft.margin.only(0,0,0,15),
                                         alignment=ft.alignment.top_right,
-                                        margin=ft.margin.only(0,0,0,10)
                                         )
         
         # self.space= ft.Placeholder(color=ft.colors.random_color(),expand=True)#一時的な場所確保
