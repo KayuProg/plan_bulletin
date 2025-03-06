@@ -59,8 +59,8 @@ class tasks_contents():
         
 
         self.display_flag=1#1の時にはremainが表示されている．0のときにはcompletedが表示されている．
-        self.remain=ft.Column(controls=[],expand=True)
-        self.completed=ft.Column(controls=[],expand=True)
+        self.remain=ft.Column(controls=[],spacing=5,expand=True)
+        self.completed=ft.Column(controls=[],spacing=5,expand=True)
         
         self.tasks_list=ft.Column(controls=[self.remain],expand=True)#ここにのlistを入れていく
 
@@ -133,32 +133,46 @@ class tasks_contents():
             #########################################################
             due_date_control=ft.Container(content=ft.Text(due_date,size=25,weight=ft.FontWeight.W_500,),
                               alignment=ft.alignment.center,
-                            #   width=100,height=50,
-                            #   margin= ft.margin.symmetric(vertical=10),padding=0,
-                            #   border_radius=0,
+                              width=100,
+                            #   height=30,
+                              margin= ft.margin.only(0,0,5,0),padding=0,
+                              border_radius=0,
                               )
             
             if due_check=="expired":#期限切れ
                 title_control=ft.Container(content=ft.Text(title,size=25,weight=ft.FontWeight.W_500,color="red"),
-                                alignment=ft.alignment.center,
-                            #   width=100,height=50,
+                                alignment=ft.alignment.center_left,
+                                width=340,
+                                # height=50,
                             #   margin= ft.margin.symmetric(vertical=10),padding=0,
-                            #   border_radius=0,
+                                border_radius=0,
                                 )
             elif due_check=="not_expired":
                 title_control=ft.Container(content=ft.Text(title,size=25,weight=ft.FontWeight.W_500,),
-                                alignment=ft.alignment.center,
-                            #   width=100,height=50,
+                                alignment=ft.alignment.center_left,
+                                width=340,
+                                # height=50,
                             #   margin= ft.margin.symmetric(vertical=10),padding=0,
                             #   border_radius=0,
                                 )
             
-            note_control=ft.Container(content=ft.Text(note,size=25,weight=ft.FontWeight.W_500,),
-                            alignment=ft.alignment.center,
-                        #   width=100,height=50,
-                        #   margin= ft.margin.symmetric(vertical=10),padding=0,
+            note_control=ft.Container(content=ft.Text(note,size=18,weight=ft.FontWeight.W_400,),
+                            # bgcolor="grey",
+                            alignment=ft.alignment.center_left,
+                            width=340,
+                        #   height=50,
+                            margin= ft.margin.only(20,0,0,0),padding=0,
                         #   border_radius=0,
                             )
+            # print(note)
+            #add note
+            title_display=title_control
+
+            if note==None:
+                title_display=title_control
+            else :
+                title_display=ft.Column(controls=[title_control,note_control],expand=True,spacing=0)
+            
             
             if status=="needsAction":
                 btn= ft.Switch(value=False,on_change=lambda e,tid=task_id, ts=status:self.task_complete(tid, ts,e.control.value))
@@ -172,7 +186,7 @@ class tasks_contents():
         #     else:
         #         plan_column=ft.Column(controls=[plan_con,description],expand=True,spacing=0)
 
-            list_con=ft.Container(content=ft.Row(controls=[due_date_control,title_control,btn],spacing=0),margin=ft.margin.only(0,0,0,0))
+            list_con=ft.Container(content=ft.Row(controls=[due_date_control,title_display,btn],spacing=0),margin=ft.margin.only(0,0,0,0))
 
             if status=="needsAction":
                 self.remain.controls.append(list_con)
@@ -192,50 +206,3 @@ class tasks_contents():
         return 0
         
         
-    def calender_update(self):
-        # #self.plansを初期化
-        # self.plans.controls.clear()
-        
-        # # print("initialize")
-        # events=calender.main()
-        # # list_con=[]
-        # for event in events:
-        #     event_time=datetime.datetime.fromisoformat(event["date"]).strftime("%H:%M")
-        #     if event_time=="00:00":
-        #         event_time="All day"
-
-        #     bg_color=event["color"]
-            
-        #     time=ft.Container(content=ft.Text(event_time,size=25,weight=ft.FontWeight.W_500,),
-        #                       alignment=ft.alignment.center,
-        #                       width=100,height=50,
-        #                       margin= ft.margin.symmetric(vertical=10),padding=0,
-        #                       border_radius=0,
-        #                       )
-        #     plan_con=ft.Container(content=ft.Text(event["summary"],size=30,weight=ft.FontWeight.W_500,bgcolor=bg_color,color="black",expand=True),
-        #                         # alignment=ft.alignment.center,
-        #                         width=370,
-        #                         margin=ft.margin.only(0,0,0,1),padding=ft.padding.symmetric(horizontal=10),
-        #                         border_radius=3,
-        #                         bgcolor=bg_color
-        #                       )
-                                 
-        #     description=ft.Container(content=ft.Text(event["desc"],size=18,weight=ft.FontWeight.W_500,color="black",expand=True),
-        #                         # alignment=ft.alignment.center,
-        #                         width=370,
-        #                         margin=0,padding=ft.padding.only(10,0,0,0),
-        #                         border_radius=3,
-        #                         bgcolor=bg_color
-        #                       )
-        #     # print(plan_con.content.value)
-            
-        #     if event["desc"]==None:#descriptionに何も記述ない場合はcolumnを作成しない．
-        #         plan_column=plan_con
-        #     else:
-        #         plan_column=ft.Column(controls=[plan_con,description],expand=True,spacing=0)
-
-        #     list_con=ft.Container(content=ft.Row(controls=[time,plan_column],spacing=10),margin=ft.margin.only(0,10,0,0))
-        #     # print(event["summary"])
-        #     self.plans.controls.append(list_con)
-        
-        print("added")

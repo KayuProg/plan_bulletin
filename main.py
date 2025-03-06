@@ -24,6 +24,7 @@ def main(page: ft.Page):
     page.add(app)
 
     while 1:
+        #並列処理にしたいよね
         calender.calender_update()#これを実行するとカレンダーの内容がupdateされる．
         tasks.tasks_list_create()#これを実行するとtasksがupdateされる．
         page.update()
