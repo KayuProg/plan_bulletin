@@ -72,6 +72,7 @@ class tasks_contents():
                                                                   style=ft.ButtonStyle(text_style=ft.TextStyle(size=20)),
                                                                   bgcolor="#65656565"),
                                         alignment=ft.alignment.top_right,
+                                        margin=ft.margin.only(0,0,0,10)
                                         )
         
         # self.space= ft.Placeholder(color=ft.colors.random_color(),expand=True)#一時的な場所確保
@@ -142,7 +143,7 @@ class tasks_contents():
             if due_check=="expired":#期限切れ
                 title_control=ft.Container(content=ft.Text(title,size=25,weight=ft.FontWeight.W_500,color="red"),
                                 alignment=ft.alignment.center_left,
-                                width=340,
+                                width=330,
                                 # height=50,
                             #   margin= ft.margin.symmetric(vertical=10),padding=0,
                                 border_radius=0,
@@ -150,7 +151,7 @@ class tasks_contents():
             elif due_check=="not_expired":
                 title_control=ft.Container(content=ft.Text(title,size=25,weight=ft.FontWeight.W_500,),
                                 alignment=ft.alignment.center_left,
-                                width=340,
+                                width=330,
                                 # height=50,
                             #   margin= ft.margin.symmetric(vertical=10),padding=0,
                             #   border_radius=0,
@@ -159,7 +160,7 @@ class tasks_contents():
             note_control=ft.Container(content=ft.Text(note,size=18,weight=ft.FontWeight.W_400,),
                             # bgcolor="grey",
                             alignment=ft.alignment.center_left,
-                            width=340,
+                            width=310,
                         #   height=50,
                             margin= ft.margin.only(20,0,0,0),padding=0,
                         #   border_radius=0,
@@ -171,7 +172,7 @@ class tasks_contents():
             if note==None:
                 title_display=title_control
             else :
-                title_display=ft.Column(controls=[title_control,note_control],expand=True,spacing=0)
+                title_display=ft.Column(controls=[title_control,note_control],spacing=0)
             
             
             if status=="needsAction":
