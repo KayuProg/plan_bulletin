@@ -5,6 +5,8 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 import os.path
 import datetime
+import traceback
+import time
 
 # 読み取り権限を指定
 SCOPES = ["https://www.googleapis.com/auth/tasks"]
@@ -115,18 +117,35 @@ def main():
         
 def change_status(task_id,status,btn_value):
     # print(tasklist_id)
-    # print(f"\nTasklist ID: {tasklistid},Task ID:{task_id} Status: {status}, Checked: {btn_value}\n")
+    print(f"\nTasklist ID: {tasklistid},Task ID:{task_id} Status: {status}, Checked: {btn_value}\n")
     
     if btn_value:
         overwrite_status="completed"
     else :
         overwrite_status="needsAction"
+        
+    #成功するまで処理繰り返す    
     
-    service.tasks().patch(
-        tasklist=tasklistid,
-        task=task_id,
-        body={"status": f"{overwrite_status}"}
-    ).execute()
+    time.sleep(3)
+    
+    for _ in range(3):  # 最大3回実行
+        try:
+            service.tasks().patch(
+                            tasklist=tasklistid,
+                            task=task_id,
+                            body={"status": f"{overwrite_status}"}
+                        ).execute()
+        except Exception as e:
+            print("失敗しました。もう一度繰り返します", _)
+            print(traceback.format_exc()) # 例外の内容を表示
+            time.sleep(1) # 適当に待つ
+        else:
+            print("成功しました。ループを終了します。")
+            break
+    else:
+        print("最大試行回数に達しました。処理を中断します")
+        # raise <適当なエラー>
+        
     
     return 0
     

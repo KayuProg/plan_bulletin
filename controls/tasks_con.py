@@ -68,9 +68,26 @@ class tasks_contents():
         #self.plansにlistを作成する関数の実行
         self.tasks_list_create()
         
+        
+        self.refresh=ft.Container(content=ft.TextButton(
+                                                        content=ft.Icon(name=ft.icons.REFRESH, color="#00bfff",size=50),
+                                                        # alignment=ft.MainAxisAlignment.SPACE_AROUND,)
+                                                        on_click=self.refresh_tasks),
+                                # bgcolor="brown",
+                                margin=ft.margin.only(0,0,0,10),
+                                alignment=ft.alignment.bottom_right,
+                                )
+
+        # self.refresh=ft.Container(content=ft.ElevatedButton(text="Refresh",on_click=self.refresh_tasks,
+        #                                                           style=ft.ButtonStyle(text_style=ft.TextStyle(size=20)),
+        #                                                           bgcolor="#65656565"),
+        #                                 margin=ft.margin.only(0,0,0,10),
+        #                                 alignment=ft.alignment.top_right,
+        #                                 )
         self.change_button=ft.Container(content=ft.ElevatedButton(text="Change Display",on_click=self.change_display,
                                                                   style=ft.ButtonStyle(text_style=ft.TextStyle(size=20)),
                                                                   bgcolor="#65656565"),
+                                        margin=ft.margin.only(0,0,0,15),
                                         alignment=ft.alignment.top_right,
                                         )
         
@@ -79,8 +96,9 @@ class tasks_contents():
         #このself.contentsをmain.pyで呼び出して使用する．
         self.contents=ft.Column(controls=[self.main_bar,
                                           ft.Container(content=ft.Divider(color="white",height=1.5,thickness=1.5),margin=ft.margin.only(0,0,0,20),),
-                                        self.change_button,
-                                        self.tasks_list
+                                          self.change_button,
+                                          self.tasks_list,
+                                          self.refresh
                                         ],expand=True,spacing=0)
 
     def change_display(self,e):        
@@ -159,7 +177,7 @@ class tasks_contents():
             note_control=ft.Container(content=ft.Text(note,size=18,weight=ft.FontWeight.W_400,),
                             # bgcolor="grey",
                             alignment=ft.alignment.center_left,
-                            width=340,
+                            width=320,
                         #   height=50,
                             margin= ft.margin.only(20,0,0,0),padding=0,
                         #   border_radius=0,
@@ -171,7 +189,7 @@ class tasks_contents():
             if note==None:
                 title_display=title_control
             else :
-                title_display=ft.Column(controls=[title_control,note_control],expand=True,spacing=0)
+                title_display=ft.Column(controls=[title_control,note_control],spacing=0)
             
             
             if status=="needsAction":
@@ -199,10 +217,16 @@ class tasks_contents():
     def task_complete(self,tid,ts,val):
         tasks.change_status(tid, ts,val)
         #ここにtasksの表示をupdateする関数の実行を書く．
-        time.sleep(1.5)#スライドスイッチの変化がGoogle Tasksに反映されるまで待つ
+        time.sleep(2)#スライドスイッチの変化がGoogle Tasksに反映されるまで待つ
         self.tasks_list_create()
         self.page.update()
         
         return 0
         
+        
+    def refresh_tasks(self,e):
+        print("refreshing")
+        self.tasks_list_create()
+        self.page.update()
+        return 0
         
